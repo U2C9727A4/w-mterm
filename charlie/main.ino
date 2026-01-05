@@ -658,7 +658,7 @@ client_t client_accept(void) {
             WiFiClient client = server.accept();
             if (client) {
                 wclients[i] = client;
-                Serial.println("Accepted a client.");
+                //Serial.println("Accepted a client.");
                 return i;
             }
         }
