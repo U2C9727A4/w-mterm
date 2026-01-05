@@ -127,6 +127,11 @@ fn set_raw_mode(fd: std.posix.fd_t) !void {
     try std.posix.tcsetattr(fd, .NOW, cur_mode);
 }
 
+fn disableNagle(mcur: std.net.Stream) !void {
+    const one: c_int = 1;
+    try std.posix.setsockopt(mcur.handle, std.posix.IPPROTO.TCP, std.posix.TCP.NODELAY, std.mem.asBytes(&one));
+}
+
 // argv: program "mcu address" "port"
 pub fn main() !void {
     const args = try std.process.argsAlloc(global_allocator);
@@ -138,10 +143,11 @@ pub fn main() !void {
     try set_raw_mode(std.fs.File.stdin().handle);
 
     mcu = try std.net.tcpConnectToHost(global_allocator, mcu_ip, try std.fmt.parseInt(u16, mcu_port, 10));
+    try disableNagle(mcu);
 
     while (true) {
         try tx_thread();
         try rx_thread();
-        std.Thread.sleep(50 * std.time.ns_per_ms);
+        std.Thread.sleep(10 * std.time.ns_per_ms);
     }
 }
