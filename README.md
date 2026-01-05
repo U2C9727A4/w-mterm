@@ -9,4 +9,4 @@ Charlie is the MCU that talks to the server/PC. It gets compiny's terminal data 
 Special configuration is needed on the server for charlie to work.
 
 # License notes
-mfslib itself is licensed as AGPL. This is what charlie uses. compiny is entirely BSD 3-clause.
+mfslib itself is licensed as LGPL. This is what charlie uses. compiny is entirely BSD 3-clause.
