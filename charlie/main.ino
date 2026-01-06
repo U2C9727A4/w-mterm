@@ -216,8 +216,8 @@ class mfs_server {
     // Sends the equivelent MFS error of the given message.
     // Inherits dropping cliets from send_mfs_message. Returs 0 on success, 1 on error, 2 if it did drop the client.
     int32_t send_mfs_error(client_t client, mfs_message_t msg, uint16_t errcode) {
-        Serial.print("Sending mfs errorcode: ");
-        Serial.println(errcode);
+        //Serial.print("Sending mfs errorcode: ");
+        //Serial.println(errcode);
         msg.op = MFS_RESPONSE_OF(MFS_OP_ERROR);
         char buffer[2];
         buffer[0] = (errcode) & 0xFF;
