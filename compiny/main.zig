@@ -1,8 +1,4 @@
 const std = @import("std");
-const c = @cImport({
-    @cInclude("unistd.h");
-    @cInclude("sys/ioctl.h");
-});
 
 const mfs_message = struct {
     psize: u32,
@@ -64,8 +60,8 @@ fn get_mfs_message(server: std.net.Stream, allocator: std.mem.Allocator) !mfs_me
 // gets available bytes on file. POSIX SPECIFIC.
 fn get_avail_bytes(file: std.fs.File) !u32 {
     var count: u32 = 0;
-    const ret = c.ioctl(file.handle, c.FIONREAD, &count);
-    if (ret != 0) return error.IoctlError;
+    const result =  std.posix.system.ioctl(file.handle, std.posix.T.FIONREAD, @intFromPtr(&count));
+    if (result != 0) return error.IoctlFailed;
     return count;
 }
 
@@ -97,6 +93,7 @@ fn rx_thread() !void {
 }
 
 fn tx_thread() !void {
+        // Lock mutex AFTER we read.
         var avail = try get_avail_bytes(std.fs.File.stdin());
         if (avail > 4096) avail = 4096;
         const buf = try global_allocator.alloc(u8, avail);
@@ -136,6 +133,7 @@ fn disableNagle(mcur: std.net.Stream) !void {
 pub fn main() !void {
     const args = try std.process.argsAlloc(global_allocator);
     defer std.process.argsFree(global_allocator, args);
+    if (args.len < 3) std.debug.print("USAGE: compiny charlie_ip charlie_port", .{});
 
     const mcu_ip = args[1][0..args[1].len];
     const mcu_port = args[2][0..args[2].len];
